@@ -1,60 +1,88 @@
-# Minolta Maxxum 5000 — 49 mm Front Lens Cap (3D Printable)
+# Minolta Maxxum 5000 — 49 mm Front Lens Cap (pinch lock)
 
-Parametric front lens caps for the **Minolta Maxxum 5000** kit lenses (and other Minolta AF / Sony A-mount lenses with a **49 mm** filter thread). Includes ready-to-print STL files, a Python generator, and notes on how to design printable fit parts.
+Redesigned **front** caps for the Maxxum 5000 kit lens (**Minolta AF 50 mm f/1.7**, filter **49 × 0.75**), with an **inward-pinch lock** like the OEM **LF-1349**.
 
-## Check your lens first
+> The older friction push-on STLs in `stl/*.stl` did **not** work well — they are kept only for reference. Use **`stl/oem_spring/`** or **`stl/pinch/`**.
 
-Look at the front of the lens for `Ø49mm` (or similar). The common Maxxum 5000 kit lenses (AF 50 mm f/1.7, AF 35–70, etc.) use **49 × 0.75** filter threads (ISO 1948 photographic filter series).
+## What lens / what cap
 
-If your lens is a different size, regenerate with:
+| | |
+|--|--|
+| Camera | Minolta Maxxum 5000 |
+| Kit lens | AF 50 mm f/1.7 |
+| Filter thread | **Ø49 mm × 0.75** |
+| OEM cap | **LF-1349** |
+| Mechanism | Squeeze pads **inward** → tabs/arches retract → insert or remove; release → locks in the filter thread |
+
+Full measurement notes: [`docs/DIMENSIONS.md`](docs/DIMENSIONS.md)
+
+## Print this (recommended): OEM-style shell + spring
+
+Files in [`stl/oem_spring/`](stl/oem_spring/):
+
+| File | Qty | Role |
+|------|-----|------|
+| `minolta_49mm_oem_shell.stl` | 1 | Outer lid |
+| `minolta_49mm_oem_spring_clip.stl` | 1 | Inward-pinch spring that locks in the threads |
+| `minolta_49mm_oem_PREVIEW_assembled.stl` | — | Visual only, do not print |
+
+### Print settings
+
+**Shell**
+
+- PLA or PETG, 0.16–0.20 mm layers, 3–4 walls, 15–25% infill  
+- Face down on the bed  
+
+**Spring clip (critical)**
+
+- **PETG**, **100% infill**, **0.12–0.16 mm** layers, 3+ walls  
+- Seam away from the arch tips  
+- No supports if oriented flat  
+
+### Assembly
+
+1. Clean spring seat and pad slots in the shell.  
+2. Compress the spring pads slightly and seat the clip under the face ledges.  
+3. Pads should sit in the face slots so you can pinch them.  
+4. Pinch → push onto the 49 mm filter thread → release to lock.
+
+## Alternate: sliding center-pinch (2 latches)
+
+Files in [`stl/pinch/`](stl/pinch/):
+
+| File | Qty |
+|------|-----|
+| `minolta_49mm_pinch_cap_body.stl` | 1 |
+| `minolta_49mm_pinch_latch.stl` | 1 |
+| `minolta_49mm_pinch_latch_mirror.stl` | 1 |
+
+Latches print in PETG; body in PLA/PETG. Slide latches into the body guides so teeth poke through the skirt windows.
+
+## Thread engagement (design intent)
+
+| State | Tip / plug OD | Purpose |
+|-------|---------------|---------|
+| Pinched | ~47.3–47.8 mm | Clears filter minor Ø ≈ 48.19 mm |
+| Locked | ~49.5–49.7 mm | Catches past filter major Ø 49.00 mm |
+
+## Regenerate (optional)
+
+Needs CadQuery (e.g. a venv):
 
 ```bash
-python3 generate_lens_cap.py --size 52
+python3 -m venv .venv
+.venv/bin/pip install cadquery
+.venv/bin/python generate_oem_spring_cap.py   # recommended
+.venv/bin/python generate_pinch_cap.py        # alternate
 ```
 
-## Ready-to-print files
+Tune diameters in the script constants if your printer runs oversized/undersized.
 
-| File | Fit style | When to use |
-|------|-----------|-------------|
-| [`stl/minolta_maxxum_49mm_push_on_lens_cap.stl`](stl/minolta_maxxum_49mm_push_on_lens_cap.stl) | Push-on over filter rim | Start here |
-| [`stl/minolta_maxxum_49mm_push_on_lens_cap_tight.stl`](stl/minolta_maxxum_49mm_push_on_lens_cap_tight.stl) | Tighter push-on | If the default is loose |
-| [`stl/minolta_maxxum_49mm_snap_in_lens_cap.stl`](stl/minolta_maxxum_49mm_snap_in_lens_cap.stl) | Snap bead into threads | Closer to OEM feel; may need tuning |
+## Community parts worth knowing
 
-## Print settings (FDM)
-
-- **Material:** PETG preferred (flex + durability); PLA works for a first fit test
-- **Nozzle:** 0.4 mm
-- **Layer height:** 0.16–0.20 mm (0.12 mm if you later add real threads)
-- **Walls / perimeters:** 3–4
-- **Infill:** 15–25%
-- **Orientation:** Face down on the bed (open rim up) for a clean outer face
-- **Supports:** None for these designs
-- **Elephant-foot compensation:** On (helps the open rim stay round)
-
-If the push-on is too tight, lightly sand the inner bead or regenerate with a larger `--size` offset in the script. If too loose, print the `_tight` variant.
-
-## Generator
-
-```bash
-python3 generate_lens_cap.py                  # all 49 mm variants
-python3 generate_lens_cap.py --size 49 --style push_on
-python3 generate_lens_cap.py --size 55 --style all --out ./stl
-```
-
-No third-party libraries required (stdlib only).
-
-## Existing community models
-
-These are also worth trying if you prefer a spring-clip OEM style:
-
-- [Front Lens Caps — All Sizes (Printables)](https://www.printables.com/model/352819-front-lens-caps-all-sizes) — spring-fit mains + inserts, includes 49 mm
-- [Customized push-on 49 mm Minolta (Thingiverse)](https://www.thingiverse.com/thing:625302)
-- [Minolta 49 mm Lens Cap Spring (Printables)](https://www.printables.com/model/927966-minolta-49mm-lens-cap-spring) — replacement spring only
-- [Sony A / Minolta AF rear cap (Cults)](https://cults3d.com/en/3d-model/gadget/sony-a-mount-minolta-af-lens-cap) — **rear** lens cap, not front
-
-## Design research
-
-See [`docs/TECHNIQUES.md`](docs/TECHNIQUES.md) for the techniques used to generate printable models like this: CAD approaches, mesh rules, DfAM constraints, fit strategies, and filter-thread standards.
+- [Minolta 49 mm Lens Cap Spring (Printables)](https://www.printables.com/model/927966-minolta-49mm-lens-cap-spring) — replacement spring tested on Maxxum lenses  
+- [Front Lens Caps All Sizes — ThomPatterson](https://www.printables.com/model/352819-front-lens-caps-all-sizes) — spring-fit main+inserts, author-tested at 49 mm  
+- [Minolta 49 mm lens cap clip](https://www.printables.com/model/1592707-minolta-49mm-lens-cap-clip)
 
 ## License
 
